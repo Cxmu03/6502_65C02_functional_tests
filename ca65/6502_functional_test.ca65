@@ -569,7 +569,7 @@ m8i     equ $ff&~intdis     ;8 bit mask - interrupt disable
 ;   designated write areas.
 ;   uses zpt word as indirect pointer, zpt+2 word as checksum
         .if ram_top > -1
-check_ram   macro
+          .macro check_ram
             cld
             lda #0
             sta zpt         ;set low byte of indirect pointer
@@ -585,9 +585,9 @@ ccs3:       adc zero_page,x
             clc
 ccs2:       inx
             bne ccs3
-            ldx #hi(abs1)   ;set high byte of indirect pointer
+            ldx #.HIBYTE(abs1)   ;set high byte of indirect pointer
             stx zpt+1
-            ldy #lo(abs1)   ;data after write & execute test area
+            ldy #.LOBYTE(abs1)   ;data after write & execute test area
 ccs5:       adc (zpt),y
             bcc ccs4
             inc zpt+3       ;carry to high byte
@@ -831,7 +831,7 @@ ld_vect:lda vec_init,x
         pla
         and #4          ;isolate flag
         sta flag_I_on   ;or mask
-        eor #lo(~4)     ;reverse
+        eor #.LOBYTE(~4)     ;reverse
         sta flag_I_off  ;and mask
     .endif
 
@@ -851,9 +851,9 @@ gcs3:   adc zero_page,x
         clc
 gcs2:   inx
         bne gcs3
-        ldx #hi(abs1)   ;set high byte of indirect pointer
+        ldx #.HIBYTE(abs1)   ;set high byte of indirect pointer
         stx zpt+1
-        ldy #lo(abs1)   ;data after write & execute test area
+        ldy #.LOBYTE(abs1)   ;data after write & execute test area
 gcs5:   adc (zpt),y
         bcc gcs4
         inc ram_chksm+1 ;carry to high byte
